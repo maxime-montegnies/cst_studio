@@ -1,0 +1,29 @@
+:root {
+  /* ── Couleurs ─────────────────────────────────────────────────── */
+  --color-red: #d01c1c;
+  --color-red-bright: #ff3333;
+  --color-red-soft: rgba(208, 28, 28, 0.18);
+
+  --color-bg: #07070a;
+  --color-bg-2: #0e0e12;
+  --color-bg-3: #141418;
+  --color-bg-4: #1a1a1f;
+
+  --color-fg: #ffffff;
+  --color-muted: rgba(255, 255, 255, 0.62);
+  --color-muted-2: rgba(255, 255, 255, 0.42);
+  --color-border: rgba(255, 255, 255, 0.07);
+
+  /* ── Typographie ──────────────────────────────────────────────── */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-label: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* ── Espacements & layout ─────────────────────────────────────── */
+  --container-padding-x: clamp(20px, 5vw, 72px);
+  --section-padding-y: clamp(72px, 10vw, 120px);
+  --container-max: 1400px;
+
+  /* ── Animation ────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
