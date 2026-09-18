@@ -1,0 +1,196 @@
+---
+import { getCollection } from 'astro:content';
+
+const portfolio = (await getCollection('portfolio'))
+  .filter((entry) => !entry.data.draft)
+  .sort((a, b) => a.data.order - b.data.order);
+---
+<section
+  id="realisations"
+  class="section realisations"
+  data-scene-state="realisations"
+>
+  <div class="container">
+    <header class="realisations-header">
+      <div>
+        <p class="section-eyebrow" data-reveal>Nos réalisations</p>
+        <h2 class="section-title" data-reveal data-reveal-delay="0.08">
+          DERNIERS <span class="section-title-outline">PROJETS</span>
+        </h2>
+      </div>
+      <a
+        href="#contact"
+        class="btn btn-outline realisations-cta"
+        data-reveal
+        data-reveal-delay="0.16"
+      >
+        Discuter d'un projet →
+      </a>
+    </header>
+
+    <div class="realisations-grid">
+      {portfolio.map((entry, i) => (
+        <article
+          class="realisation"
+          data-reveal
+          data-reveal-delay={(0.08 * i).toFixed(2)}
+        >
+          <span class="realisation-num">{String(i + 1).padStart(2, '0')}</span>
+          <img
+            src={entry.data.image}
+            alt={entry.data.title}
+            loading="lazy"
+          />
+          <div class="realisation-overlay" aria-hidden="true"></div>
+          <div class="realisation-meta">
+            <span class="realisation-category">{entry.data.category}</span>
+            <h3 class="realisation-title">{entry.data.title}</h3>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .realisations-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-bottom: clamp(40px, 6vw, 60px);
+  }
+
+  .realisations-cta {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    .realisations-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+  }
+
+  /* ── Grille asymétrique editorial ─────────────────── */
+  .realisations-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: clamp(240px, 32vw, 320px);
+    gap: 3px;
+  }
+
+  .realisation:nth-child(1) {
+    grid-column: span 7;
+  }
+  .realisation:nth-child(2) {
+    grid-column: span 5;
+  }
+  .realisation:nth-child(3) {
+    grid-column: span 5;
+  }
+  .realisation:nth-child(4) {
+    grid-column: span 7;
+  }
+
+  /* À partir du 5e item, on retombe sur des spans de 6 (2 colonnes) */
+  .realisation:nth-child(n + 5) {
+    grid-column: span 6;
+  }
+
+  @media (max-width: 900px) {
+    .realisations-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: clamp(220px, 36vw, 280px);
+    }
+    .realisation:nth-child(n) {
+      grid-column: span 1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .realisations-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Card ──────────────────────────────────────────── */
+  .realisation {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-bg-3);
+  }
+
+  .realisation img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.2s var(--ease-out), filter 0.9s ease;
+    filter: brightness(0.55) saturate(0.78);
+  }
+  .realisation:hover img {
+    transform: scale(1.07);
+    filter: brightness(0.82) saturate(1.05);
+  }
+
+  .realisation-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(7, 7, 10, 0.92) 0%,
+      rgba(7, 7, 10, 0.2) 55%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  .realisation-num {
+    position: absolute;
+    top: 22px;
+    right: 26px;
+    z-index: 2;
+    font-family: var(--font-display);
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.2);
+    transition: color 0.4s var(--ease-out);
+  }
+  .realisation:hover .realisation-num {
+    color: rgba(208, 28, 28, 0.55);
+  }
+
+  .realisation-meta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    padding: 70px 30px 28px;
+    transform: translateY(6px);
+    transition: transform 0.55s var(--ease-out);
+  }
+  .realisation:hover .realisation-meta {
+    transform: translateY(0);
+  }
+
+  .realisation-category {
+    display: block;
+    font-family: var(--font-label);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .realisation-title {
+    font-family: var(--font-label);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+</style>

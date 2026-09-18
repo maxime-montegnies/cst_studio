@@ -1,0 +1,182 @@
+---
+import { services } from '~/data/services';
+---
+<section id="services" class="section services" data-scene-state="services">
+  <div class="container">
+    <header class="services-header">
+      <div>
+        <p class="section-eyebrow" data-reveal>Ce que nous faisons</p>
+        <h2 class="section-title" data-reveal data-reveal-delay="0.08">
+          NOS <span class="section-title-outline">SERVICES</span>
+        </h2>
+        <div class="section-bar" data-reveal data-reveal-delay="0.16"></div>
+      </div>
+      <p class="services-intro" data-reveal data-reveal-delay="0.24">
+        Production audiovisuelle clé en main — de la conception à la diffusion.
+        Chaque projet reçoit l'exigence d'un film et la précision d'un brief stratégique.
+      </p>
+    </header>
+
+    <div class="services-grid">
+      {services.map((service, i) => (
+        <article
+          class="service-card"
+          data-reveal
+          data-reveal-delay={(0.08 * i).toFixed(2)}
+        >
+          <div class="service-card-bar" aria-hidden="true"></div>
+          <span class="service-card-num">
+            {service.num} — {service.category.toUpperCase()}
+          </span>
+          <h3 class="service-card-title">{service.title}</h3>
+          <p class="service-card-desc">{service.description}</p>
+          <ul class="service-card-tags">
+            {service.tags.map((tag) => (
+              <li class="service-card-tag">{tag}</li>
+            ))}
+          </ul>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Header ──────────────────────────────────────── */
+  .services-header {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: end;
+    margin-bottom: clamp(48px, 7vw, 72px);
+  }
+
+  .services-intro {
+    font-size: 15px;
+    color: var(--color-muted);
+    line-height: 1.95;
+  }
+
+  @media (max-width: 768px) {
+    .services-header {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+
+  /* ── Grid ────────────────────────────────────────── */
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 768px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Card ────────────────────────────────────────── */
+  .service-card {
+    padding: clamp(36px, 4.5vw, 60px) clamp(28px, 3.5vw, 52px);
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.5s var(--ease-out);
+  }
+
+  /* Pas de bord droit sur la 2e colonne en desktop */
+  .service-card:nth-child(2n) {
+    border-right: none;
+  }
+  /* Pas de bord bas sur la dernière ligne (les 2 derniers en desktop) */
+  .service-card:nth-last-child(-n + 2) {
+    border-bottom: none;
+  }
+
+  @media (max-width: 768px) {
+    .service-card {
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .service-card:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .service-card:hover {
+    background: rgba(20, 20, 24, 0.45);
+  }
+
+  /* Barre rouge animée en haut de la carte au hover */
+  .service-card-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--color-red), rgba(208, 28, 28, 0.4));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.75s var(--ease-out);
+  }
+  .service-card:hover .service-card-bar {
+    transform: scaleX(1);
+  }
+
+  .service-card-num {
+    font-family: var(--font-label);
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--color-red);
+    font-weight: 700;
+    display: block;
+    margin-bottom: clamp(24px, 3vw, 38px);
+  }
+
+  .service-card-title {
+    font-family: var(--font-display);
+    font-size: clamp(28px, 3vw, 36px);
+    letter-spacing: 1px;
+    margin-bottom: 18px;
+    line-height: 1;
+    font-weight: 400;
+    transition: letter-spacing 0.5s var(--ease-out);
+  }
+  .service-card:hover .service-card-title {
+    letter-spacing: 2px;
+  }
+
+  .service-card-desc {
+    font-size: 14px;
+    color: var(--color-muted);
+    line-height: 1.9;
+    max-width: 340px;
+    margin-bottom: 22px;
+  }
+
+  /* ── Tags ────────────────────────────────────────── */
+  .service-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  .service-card-tag {
+    font-family: var(--font-label);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.32);
+    padding: 5px 12px;
+    transition: border-color 0.45s var(--ease-out), color 0.45s var(--ease-out);
+  }
+
+  .service-card:hover .service-card-tag {
+    border-color: var(--color-red-soft);
+    color: rgba(255, 255, 255, 0.62);
+  }
+</style>

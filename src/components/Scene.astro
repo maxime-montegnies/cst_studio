@@ -1,0 +1,111 @@
+---
+/**
+ * Canvas Three.js transparent — caméra de surveillance articulée animée.
+ *
+ * Le fond animé vit dans `Background.astro` (CSS). Cette scène contient
+ * uniquement le rig 3D et son éclairage.
+ *
+ * Layering :
+ *  - Background.astro (CSS)   : z-index: 0
+ *  - canvas (rig 3D)          : z-index: 0 (DOM order = peint après bg)
+ *  - main / footer            : z-index: 1
+ *  - nav                      : z-index: 500
+ *
+ * Pour passer au vrai logo GLB :
+ *  1. Déposer `public/models/logo.glb` avec les pivots nommés
+ *     `Base`, `PivotYaw`, `PivotPitch` (voir `src/lib/scene/rig.ts`).
+ *  2. Remplacer la ligne placeholder ci-dessous par :
+ *     `const rig = await scene.loadRigFromGLB('/models/logo.glb');`
+ */
+---
+<canvas id="scene-canvas" aria-hidden="true"></canvas>
+
+<style>
+  #scene-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { Scene } from '~/lib/scene/scene';
+  import { CameraController } from '~/lib/scene/camera-controller';
+  import { createPointerState, lerpPointer } from '~/lib/scene/pointer';
+  import { initSmoothScroll } from '~/lib/scroll/lenis';
+  import { initReveal } from '~/lib/scroll/reveal';
+  import { initCountUp } from '~/lib/scroll/count-up';
+
+  const canvas = document.getElementById('scene-canvas') as HTMLCanvasElement | null;
+  if (canvas) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Détection tactile : pas de hover possible + pointer imprécis = mobile/tablette
+    // sans souris. Le contrôleur switchera vers un mode scroll-driven (pas de
+    // transitions de section, rotations dérivées de la progression de scroll).
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+    const scene = new Scene(canvas);
+
+    // ── Environment IBL ─────────────────────────────────────
+    //    Charge une HDR équirectangulaire (EXR) et l'utilise comme
+    //    `scene.environment` pour les reflets PBR du logo.
+    //    On lance le chargement en parallèle du rig pour économiser du temps.
+    const envLoading = scene.loadEnvironment('/models/studio_1k.exr');
+
+    // ── Rig : placeholder pour l'instant ────────────────────
+    //    Pour le vrai logo GLB :
+    //    const rig = await scene.loadRigFromGLB('/models/logo.glb');
+    // const rig = scene.loadPlaceholderRig();
+    const rig = await scene.loadRigFromGLB('/models/logo.glb');
+
+    // On s'assure que l'env est bien chargée avant de commencer le rendu
+    // (sinon le premier frame s'affiche sans reflets, puis ils apparaissent).
+    await envLoading;
+
+    const pointer = createPointerState();
+
+    // ── Smooth scroll ───────────────────────────────────────
+    const lenis = initSmoothScroll(reducedMotion);
+
+    const controller = new CameraController(
+      rig,
+      scene.camera,
+      pointer,
+      reducedMotion,
+      lenis,
+      scene.glitchUniforms.uIntensity,
+      isTouch,
+    );
+
+    // Le viewport peut changer (resize fenêtre, rotation device) :
+    // on recalcule les ancrages edge en conséquence.
+    scene.onResizeNotify(() => controller.handleResize());
+
+    initReveal(reducedMotion);
+    initCountUp(reducedMotion);
+
+    // ── Render loop piloté par GSAP ─────────────────────────
+    // Lenis + tweens GSAP + mouse-follow tournent à la vitesse native (60-120 fps)
+    // pour rester fluides, mais le rendu de la scène est throttle à 30 fps :
+    // c'est `scene.render()` qui coûte (RenderPass + GlitchPass + OutputPass),
+    // et 30 fps suffit largement vu l'esthétique low-fi/CCTV du projet.
+    const renderInterval = 1000 / 30;
+    let lastRender = 0;
+
+    gsap.ticker.add((time) => {
+      if (!reducedMotion && !isTouch) lerpPointer(pointer);
+      controller.update();
+
+      const nowMs = time * 1000;
+      if (nowMs - lastRender >= renderInterval) {
+        scene.render();
+        lastRender = nowMs;
+      }
+    });
+  }
+</script>

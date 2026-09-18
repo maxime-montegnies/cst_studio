@@ -1,0 +1,174 @@
+---
+/**
+ * Fond CSS animé — couche `position: fixed` derrière le canvas Three.js.
+ *
+ * Composition :
+ *  - .bg          : base sombre + variables CSS (--mouse-x, --mouse-y, --scroll)
+ *  - .bg-glow     : halo rouge radial qui suit la souris (CSS radial-gradient)
+ *  - .bg-aurora   : couche secondaire qui dérive en sens inverse, mix-blend screen
+ *  - .bg-grain    : grain de film via SVG fractalNoise
+ *  - .bg-vignette : vignette douce pour ancrer le regard
+ *
+ * Layering :
+ *   .bg        z-index: 0 (DOM avant Scene)
+ *   canvas     z-index: 0 (DOM après Background → peint au-dessus)
+ *   main/footer z-index: 1
+ *
+ * Perf : tout est composé par le compositor GPU du navigateur, pas de
+ * fragment shader plein écran. Le seul JS est un rAF qui met à jour
+ * 3 custom properties — coût négligeable.
+ *
+ * Reduced motion : pas de suivi souris ni de scroll-driven hue shift,
+ * le fond reste statique mais visible.
+ */
+---
+<div class="bg" aria-hidden="true">
+  <div class="bg-glow"></div>
+  <div class="bg-aurora"></div>
+  <div class="bg-grain"></div>
+  <div class="bg-vignette"></div>
+</div>
+
+<style>
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: var(--color-bg);
+
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    --scroll: 0;
+  }
+
+  /* Halo rouge principal qui suit la souris.
+     Plus de stops avec des opacités plus faibles → falloff progressif qui
+     mime visuellement un blur, sans le coût compositor d'un `filter: blur()`. */
+  .bg-glow {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(
+      circle at var(--mouse-x) var(--mouse-y),
+      rgba(208, 28, 28, 0.18) 0%,
+      rgba(208, 28, 28, 0.12) 8%,
+      rgba(208, 28, 28, 0.07) 18%,
+      rgba(208, 28, 28, 0.03) 32%,
+      rgba(208, 28, 28, 0.01) 50%,
+      transparent 75%
+    );
+  }
+
+  /* Couche secondaire : dérive avec le scroll dans l'autre sens.
+     Stops plus longs / plus diffus pour le même effet "soft" sans blur filter. */
+  .bg-aurora {
+    position: absolute;
+    inset: -10%;
+    background:
+      radial-gradient(
+        ellipse 70% 70% at calc(100% - var(--mouse-x)) calc(50% + (var(--scroll) - 0.5) * 60%),
+        rgba(255, 51, 51, 0.07) 0%,
+        rgba(255, 51, 51, 0.03) 25%,
+        rgba(255, 51, 51, 0.01) 45%,
+        transparent 70%
+      ),
+      radial-gradient(
+        ellipse 60% 60% at 25% calc(70% - var(--scroll) * 35%),
+        rgba(208, 28, 28, 0.05) 0%,
+        rgba(208, 28, 28, 0.02) 30%,
+        transparent 60%
+      );
+  }
+
+  /* Grain de film — SVG fractalNoise, en blend overlay subtil */
+  .bg-grain {
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+  }
+
+  /* Vignette pour focaliser le regard au centre */
+  .bg-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 35%,
+      rgba(7, 7, 10, 0.65) 100%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-glow,
+    .bg-aurora {
+      will-change: auto;
+    }
+  }
+</style>
+
+<script>
+  const bg = document.querySelector<HTMLElement>('.bg');
+  if (bg) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Si pas de hover possible + pointer imprécis = mobile/tablette tactile.
+    // Les gradients seront pilotés par le scroll au lieu du pointer.
+    const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+    if (!reducedMotion) {
+      const target = { x: 50, y: 50 };
+      const lerped = { x: 50, y: 50 };
+
+      if (!isTouch) {
+        // Desktop : `target` suit la souris
+        window.addEventListener(
+          'pointermove',
+          (e) => {
+            target.x = (e.clientX / window.innerWidth) * 100;
+            target.y = (e.clientY / window.innerHeight) * 100;
+          },
+          { passive: true },
+        );
+      }
+
+      let scrollProgress = 0;
+      const updateScroll = () => {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        scrollProgress = max > 0 ? window.scrollY / max : 0;
+        // En mode touch, le scroll dérive directement les coords du halo —
+        // motion type "Lissajous" pour éviter une trajectoire trop droite.
+        if (isTouch) {
+          target.x = 50 + Math.sin(scrollProgress * Math.PI * 2) * 30;
+          target.y = 50 + Math.cos(scrollProgress * Math.PI * 2.5) * 25;
+        }
+      };
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      updateScroll();
+
+      // Throttle des mises à jour CSS à ~30 fps. Chaque setProperty force le
+      // browser à recomputer les radial-gradients sur l'ensemble du layer,
+      // donc baisser le rythme de moitié = grosse économie compositor.
+      const updateInterval = 1000 / 30;
+      let lastUpdate = 0;
+
+      // À 30 fps on lerp 2× plus fort par tick pour garder un ressenti équivalent
+      // à du 60 fps avec factor 0.06 (≈ même temps de convergence asymptotique).
+      const lerpFactor = 0.12;
+
+      const tick = (now: number) => {
+        if (now - lastUpdate >= updateInterval) {
+          lerped.x += (target.x - lerped.x) * lerpFactor;
+          lerped.y += (target.y - lerped.y) * lerpFactor;
+          bg.style.setProperty('--mouse-x', `${lerped.x}%`);
+          bg.style.setProperty('--mouse-y', `${lerped.y}%`);
+          bg.style.setProperty('--scroll', String(scrollProgress));
+          lastUpdate = now;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  }
+</script>

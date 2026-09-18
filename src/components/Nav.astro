@@ -1,0 +1,218 @@
+---
+import { nav, site } from '~/site.config';
+---
+<nav class="nav" data-nav aria-label="Navigation principale">
+  <a href="/" class="logo" aria-label={site.name}>
+    <span class="logo-mark">CST</span> STUDIO<span class="logo-dot" aria-hidden="true"></span>
+  </a>
+
+  <button
+    class="nav-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-controls="nav-list"
+    aria-label="Ouvrir le menu"
+    data-nav-toggle
+  >
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+  </button>
+
+  <ul id="nav-list" class="nav-list" data-nav-list>
+    {nav.map((item) => (
+      <li><a href={item.href}>{item.label}</a></li>
+    ))}
+    <li class="nav-list-cta">
+      <a href="#contact" class="nav-cta">Devis gratuit</a>
+    </li>
+  </ul>
+
+  <a href="#contact" class="nav-cta nav-cta-desktop">Devis gratuit</a>
+</nav>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px var(--container-padding-x);
+    transition: padding 0.6s var(--ease-out), background 0.6s,
+      border-color 0.6s;
+  }
+
+  .nav.is-scrolled {
+    padding: 14px var(--container-padding-x);
+    background: rgba(7, 7, 10, 0.96);
+    border-bottom: 1px solid var(--color-border);
+    backdrop-filter: blur(12px);
+  }
+
+  /* ── Logo ─────────────────────────────────────────── */
+  .logo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 6px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .logo-mark { color: var(--color-red); }
+  .logo-dot {
+    width: 5px;
+    height: 5px;
+    background: var(--color-red);
+    border-radius: 50%;
+    margin-left: 2px;
+    animation: dotPulse 2s ease-in-out infinite;
+  }
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.6); opacity: 0.5; }
+  }
+
+  /* ── Liens desktop ────────────────────────────────── */
+  .nav-list {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+  }
+  .nav-list a:not(.nav-cta) {
+    color: var(--color-muted);
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-family: var(--font-label);
+    font-weight: 600;
+    transition: color 0.35s;
+    position: relative;
+    padding-bottom: 4px;
+  }
+  .nav-list a:not(.nav-cta)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-red);
+    transition: width 0.45s var(--ease-out);
+  }
+  .nav-list a:not(.nav-cta):hover { color: var(--color-fg); }
+  .nav-list a:not(.nav-cta):hover::after { width: 100%; }
+
+  .nav-list-cta { display: none; }
+
+  /* ── CTA ──────────────────────────────────────────── */
+  .nav-cta {
+    color: var(--color-red);
+    padding: 10px 28px;
+    font-family: var(--font-label);
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    border: 1px solid rgba(208, 28, 28, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: color 0.45s;
+    z-index: 1;
+  }
+  .nav-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-red);
+    transform: translateX(-100%);
+    transition: transform 0.5s var(--ease-out);
+    z-index: -1;
+  }
+  .nav-cta:hover { color: var(--color-fg); }
+  .nav-cta:hover::before { transform: translateX(0); }
+
+  /* ── Hamburger (caché desktop) ────────────────────── */
+  .nav-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+  }
+  .nav-toggle span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: var(--color-fg);
+    transition: transform 0.3s var(--ease-out), opacity 0.3s;
+    margin: 0 auto;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* ── Mobile ───────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .nav-cta-desktop { display: none; }
+    .nav-toggle { display: flex; }
+    .nav-list {
+      position: fixed;
+      inset: 0;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      background: rgba(7, 7, 10, 0.98);
+      backdrop-filter: blur(16px);
+      transform: translateX(100%);
+      transition: transform 0.45s var(--ease-out);
+      z-index: -1;
+    }
+    .nav-list.is-open { transform: translateX(0); }
+    .nav-list-cta { display: block; margin-top: 16px; }
+    .nav-list a:not(.nav-cta) { font-size: 14px; }
+  }
+</style>
+
+<script>
+  const nav = document.querySelector('[data-nav]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const list = document.querySelector<HTMLUListElement>('[data-nav-list]');
+
+  // Scroll state
+  if (nav) {
+    const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 80);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Mobile menu toggle
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+    list?.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  toggle?.addEventListener('click', () => {
+    setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+  });
+
+  list?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+</script>

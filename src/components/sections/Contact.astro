@@ -1,0 +1,293 @@
+---
+import { site } from '~/site.config';
+
+const contactLines = [
+  { label: 'Email', value: site.email, href: `mailto:${site.email}` },
+  { label: 'Téléphone', value: site.phoneDisplay, href: `tel:${site.phone}` },
+  { label: 'Localisation', value: site.location },
+  { label: 'Déplacement', value: site.travel },
+  { label: 'Disponibilité', value: site.hours },
+];
+
+const socials = [
+  { label: 'Instagram', href: site.social.instagram },
+  { label: 'LinkedIn', href: site.social.linkedin },
+  { label: 'Vimeo', href: site.social.vimeo },
+];
+---
+<section id="contact" class="section contact" data-scene-state="contact">
+  <div class="contact-grid">
+    {/* ── Pitch + CTA ─────────────────────────────────── */}
+    <div class="contact-pitch">
+      <span class="contact-watermark" aria-hidden="true">CONTACT</span>
+
+      <div class="contact-pill" data-reveal>
+        <span class="contact-pill-dot" aria-hidden="true"></span>
+        {site.responseTime}
+      </div>
+
+      <h2 class="contact-title" data-reveal data-reveal-delay="0.08">
+        PARLONS<br />
+        <span class="contact-title-outline">PROJET</span>
+      </h2>
+
+      <p class="contact-sub" data-reveal data-reveal-delay="0.16">
+        Vous avez un brief, un projet, ou simplement une idée en tête ?
+        On transforme les bonnes conversations en grands projets.
+      </p>
+
+      <a
+        href={`mailto:${site.email}`}
+        class="btn btn-primary contact-cta"
+        data-reveal
+        data-reveal-delay="0.24"
+      >
+        Envoyer un message →
+      </a>
+    </div>
+
+    {/* ── Coordonnées + socials ───────────────────────── */}
+    <div class="contact-details">
+      <ul class="contact-list">
+        {contactLines.map((line, i) => (
+          <li
+            class="contact-line"
+            data-reveal
+            data-reveal-delay={(0.06 * i).toFixed(2)}
+          >
+            <span class="contact-line-label">{line.label}</span>
+            <span class="contact-line-value">
+              {line.href ? (
+                <a href={line.href}>{line.value}</a>
+              ) : (
+                line.value
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div
+        class="contact-socials"
+        data-reveal
+        data-reveal-delay={(0.06 * contactLines.length).toFixed(2)}
+      >
+        {socials.map((s) => (
+          <a
+            class="contact-social"
+            href={s.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    padding: 0;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Pitch (gauche) ─────────────────────────────── */
+  .contact-pitch {
+    padding: var(--section-padding-y) var(--container-padding-x);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (max-width: 900px) {
+    .contact-pitch {
+      border-right: none;
+      border-bottom: 1px solid var(--color-border);
+    }
+  }
+
+  /* Watermark "CONTACT" en arrière-plan, rotation 90° */
+  .contact-watermark {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: var(--font-display);
+    font-size: clamp(100px, 12vw, 140px);
+    color: rgba(208, 28, 28, 0.04);
+    letter-spacing: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+  }
+
+  /* Pill "Réponse sous 24h" avec point clignotant */
+  .contact-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    border: 1px solid rgba(208, 28, 28, 0.3);
+    padding: 7px 16px;
+    font-family: var(--font-label);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-red);
+    margin-bottom: 28px;
+    align-self: flex-start;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+  }
+  .contact-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-red);
+    animation: contactBlink 1.6s infinite;
+  }
+  @keyframes contactBlink {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.15;
+      transform: scale(0.6);
+    }
+  }
+
+  /* Titre */
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: clamp(58px, 8.5vw, 108px);
+    line-height: 0.87;
+    margin-bottom: 32px;
+    font-weight: 400;
+    position: relative;
+    z-index: 1;
+  }
+  .contact-title-outline {
+    -webkit-text-stroke: 1.5px var(--color-red);
+    color: transparent;
+  }
+
+  /* Sub */
+  .contact-sub {
+    font-size: 15px;
+    color: var(--color-muted);
+    line-height: 1.95;
+    max-width: 440px;
+    margin-bottom: 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .contact-cta {
+    align-self: flex-start;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Details (droite) ───────────────────────────── */
+  .contact-details {
+    padding: var(--section-padding-y) var(--container-padding-x);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contact-list {
+    margin-bottom: 36px;
+  }
+
+  .contact-line {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--color-border);
+    transition: padding-left 0.4s var(--ease-out);
+  }
+  .contact-line:first-child {
+    border-top: 1px solid var(--color-border);
+  }
+  .contact-line:hover {
+    padding-left: 10px;
+  }
+
+  .contact-line-label {
+    font-family: var(--font-label);
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--color-red);
+    min-width: 100px;
+    margin-top: 2px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .contact-line-value {
+    font-size: 14px;
+    color: var(--color-fg);
+  }
+  .contact-line-value a {
+    transition: color 0.3s;
+  }
+  .contact-line-value a:hover {
+    color: var(--color-red);
+  }
+
+  /* ── Socials ────────────────────────────────────── */
+  .contact-socials {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .contact-social {
+    font-family: var(--font-label);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    border: 1px solid var(--color-border);
+    padding: 11px 20px;
+    transition: color 0.5s var(--ease-out), border-color 0.5s;
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    z-index: 1;
+  }
+  .contact-social::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-red);
+    transform: translateY(100%);
+    transition: transform 0.5s var(--ease-out);
+    z-index: -1;
+  }
+  .contact-social:hover {
+    color: var(--color-fg);
+    border-color: var(--color-red);
+  }
+  .contact-social:hover::before {
+    transform: translateY(0);
+  }
+</style>
