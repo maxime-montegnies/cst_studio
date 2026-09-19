@@ -55,13 +55,13 @@
     //    Charge une HDR équirectangulaire (EXR) et l'utilise comme
     //    `scene.environment` pour les reflets PBR du logo.
     //    On lance le chargement en parallèle du rig pour économiser du temps.
-    const envLoading = scene.loadEnvironment('/models/studio_1k.exr');
+    const envLoading = scene.loadEnvironment('./models/studio_1k.exr');
 
     // ── Rig : placeholder pour l'instant ────────────────────
     //    Pour le vrai logo GLB :
     //    const rig = await scene.loadRigFromGLB('/models/logo.glb');
     // const rig = scene.loadPlaceholderRig();
-    const rig = await scene.loadRigFromGLB('/models/logo.glb');
+    const rig = await scene.loadRigFromGLB('./models/logo.glb');
 
     // On s'assure que l'env est bien chargée avant de commencer le rendu
     // (sinon le premier frame s'affiche sans reflets, puis ils apparaissent).
