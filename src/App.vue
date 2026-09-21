@@ -2,7 +2,6 @@
 import { RouterLink, RouterView } from 'vue-router'
 import ThreeCanvas from './views/ThreeCanvas.vue'
 import Home from './views/HomeView.vue'
-import CutOut from './components/CutOut.vue'
 import TopNav from './components/TopNav.vue'
 import { eventBus } from '@/eventBus'
 import { ref } from 'vue'
