@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icon Control/Hierarchy: 1. Primary, Size: 2. Base, Icon: Arrow Down, Label: On, Dark: Off Copy 2</title>
+    <g id="Main" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="EXPLORATION" transform="translate(-2746, -922)">
+            <g id="WIP-screen-5" transform="translate(2434, 222)">
+                <g id="Stack-3" transform="translate(-2, 576)">
+                    <g id="Stack-2" transform="translate(56, 124)">
+                        <g id="Icon-Control/Hierarchy:-1.-Primary,-Size:-2.-Base,-Icon:-Arrow-Down,-Label:-On,-Dark:-Off-Copy-2" transform="translate(258, 0)">
+                            <g id="Icon" fill="currentColor" stroke-width="1">
+                                <g id="Chevron-Left" transform="translate(13, 11)">
+                                    <path d="M6.99975,13.99975 C6.61575,13.99975 6.23175,13.85375 5.93875,13.56075 L0.43875,8.06075 C-0.14625,7.47475 -0.14625,6.52475 0.43875,5.93875 L5.93875,0.43875 C6.52475,-0.14625 7.47475,-0.14625 8.06075,0.43875 C8.64575,1.02475 8.64575,1.97475 8.06075,2.56075 L3.62075,6.99975 L8.06075,11.43875 C8.64575,12.02475 8.64575,12.97475 8.06075,13.56075 C7.76775,13.85375 7.38375,13.99975 6.99975,13.99975 Z" id="Fill"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

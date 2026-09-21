@@ -1,0 +1,56 @@
+/* color palette from <https://github.com/vuejs/theme> */
+:root {
+  --vt-c-white: #f9f9fc;
+  --vt-c-black: #080808;
+}
+
+/* semantic color variables for this project */
+:root {
+  --color-text: var(--vt-c-white);
+  --color-background: var(--vt-c-black);
+}
+
+:root {
+  --transition-speed: 0.5s;
+  --transition-burger-speed: 0.25s;
+}
+
+:root {
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+
+}
+
+
+html {
+  font-size: 17px;
+  background: var(--color-background);
+}
+
+/*
+*/
+
+#__vue-devtools-container__ {
+  display: none;
+}
